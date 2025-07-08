@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from google import genai
 import sys
 from google.genai import types
-from functions.get_files_info import available_functions 
+from functions.get_files_info import available_functions
 from functions.call_function import call_function
 
 load_dotenv()
@@ -28,11 +28,9 @@ if len(sys.argv) < 2:
     print("Error")
     sys.exit(1)
 
-messages = [
-    types.Content(role="user", parts=[types.Part(text=sys.argv[1])])
-]
+messages = [types.Content(role="user", parts=[types.Part(text=sys.argv[1])])]
 
-if len(sys.argv) > 2 and sys.argv[2] == '--verbose':
+if len(sys.argv) > 2 and sys.argv[2] == "--verbose":
     print("User prompt:", messages[0].parts[0].text)
     print("Prompt tokens:", response.usage_metadata.prompt_token_count)
     print("Response tokens:", response.usage_metadata.candidates_token_count)
@@ -40,15 +38,20 @@ if len(sys.argv) > 2 and sys.argv[2] == '--verbose':
 for iteration in range(20):
     try:
         response = client.models.generate_content(
-        model='gemini-2.0-flash-001', contents=messages, config=types.GenerateContentConfig(tools=[available_functions], system_instruction=system_prompt)
-    )
+            model="gemini-2.0-flash-001",
+            contents=messages,
+            config=types.GenerateContentConfig(
+                tools=[available_functions], system_instruction=system_prompt
+            ),
+        )
         for candidate in response.candidates:
             messages.append(candidate.content)
             finished = True
             for part in candidate.content.parts:
                 if part.function_call != None:
-                        result = call_function(part.function_call, verbose)
-                        messages.append(types.Content(
+                    result = call_function(part.function_call, verbose)
+                    messages.append(
+                        types.Content(
                             role="tool",
                             parts=[
                                 types.Part.from_function_response(
@@ -56,11 +59,14 @@ for iteration in range(20):
                                     response={"result": result},
                                 )
                             ],
-                        ))
-                        finished = False
+                        )
+                    )
+                    finished = False
             if finished:
                 text_reply = " ".join(
-                getattr(part, "text", "") for part in candidate.content.parts if hasattr(part, "text")
+                    getattr(part, "text", "")
+                    for part in candidate.content.parts
+                    if hasattr(part, "text")
                 )
                 print("Final response:", text_reply)
                 break
@@ -68,11 +74,3 @@ for iteration in range(20):
             break
     except Exception as e:
         print(f"An error occured: {e}")
-
-            
-            
-
-
-
-
-

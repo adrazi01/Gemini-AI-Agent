@@ -64,13 +64,17 @@ schema_write_file = types.FunctionDeclaration(
 
 available_functions = types.Tool(
     function_declarations=[
-        schema_get_files_info, schema_get_file_content, schema_run_python_file, schema_write_file
+        schema_get_files_info,
+        schema_get_file_content,
+        schema_run_python_file,
+        schema_write_file,
     ]
 )
 
+
 def get_files_info(working_directory, directory=None):
     if directory is None:
-        directory = '.'
+        directory = "."
 
     joined_path = os.path.join(working_directory, directory)
     absolute_path = os.path.abspath(joined_path)
@@ -83,13 +87,13 @@ def get_files_info(working_directory, directory=None):
 
     if not os.path.isdir(absolute_path):
         return f'Error: "{directory}" is not a directory'
-    
+
     try:
         dir_list = os.listdir(absolute_path)
         file_info_list = []
         for item in dir_list:
-            file_info = (f'- {item}: file_size={os.path.getsize(os.path.join(absolute_path, item))} bytes, is_dir={os.path.isdir(os.path.join(absolute_path, item))}')
+            file_info = f"- {item}: file_size={os.path.getsize(os.path.join(absolute_path, item))} bytes, is_dir={os.path.isdir(os.path.join(absolute_path, item))}"
             file_info_list.append(file_info)
-        return '\n'.join(file_info_list)
+        return "\n".join(file_info_list)
     except Exception as e:
-        return f'Error: {e}'
+        return f"Error: {e}"
