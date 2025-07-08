@@ -30,11 +30,6 @@ if len(sys.argv) < 2:
 
 messages = [types.Content(role="user", parts=[types.Part(text=sys.argv[1])])]
 
-if len(sys.argv) > 2 and sys.argv[2] == "--verbose":
-    print("User prompt:", messages[0].parts[0].text)
-    print("Prompt tokens:", response.usage_metadata.prompt_token_count)
-    print("Response tokens:", response.usage_metadata.candidates_token_count)
-
 for iteration in range(20):
     try:
         response = client.models.generate_content(
